@@ -1,6 +1,7 @@
 package share
 
 import (
+	"log"
 	"time"
 
 	"github.com/filebrowser/filebrowser/v2/errors"
@@ -94,6 +95,7 @@ func (s *Storage) Gets(path string, id uint) ([]*Link, error) {
 	links, err := s.back.Gets(path, id)
 
 	if err != nil {
+		log.Println(err.Error())
 		return nil, err
 	}
 

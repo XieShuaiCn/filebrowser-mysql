@@ -58,7 +58,8 @@ override the options.`,
 		checkErr(err)
 		err = d.store.Auth.Save(auther)
 		checkErr(err)
-
+		err = d.store.Settings.SaveVersion()
+		checkErr(err)
 		fmt.Printf(`
 Congratulations! You've set up your database to use with File Browser.
 Now add your first user via 'filebrowser users add' and then you just

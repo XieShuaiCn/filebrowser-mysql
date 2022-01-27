@@ -3,7 +3,9 @@
 
 package frontend
 
-import "embed"
+import (
+	"embed"
+)
 
 //go:embed dist/*
 var assets embed.FS

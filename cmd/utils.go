@@ -9,14 +9,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/asdine/storm"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
-	"github.com/filebrowser/filebrowser/v2/storage/bolt"
 )
 
 func checkErr(err error) {
@@ -84,25 +82,19 @@ func dbExists(path string) (bool, error) {
 
 func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 	return func(cmd *cobra.Command, args []string) {
+		var err error
 		data := pythonData{hadDB: true}
-
 		path := getParam(cmd.Flags(), "database")
-		exists, err := dbExists(path)
+		data.store, err = storage.CreateStorage(path)
+		checkErr(err)
+		err = storage.Initialized(data.store)
+		data.hadDB = err == nil
 
-		if err != nil {
-			panic(err)
-		} else if exists && cfg.noDB {
+		if data.hadDB && cfg.noDB {
 			log.Fatal(path + " already exists")
-		} else if !exists && !cfg.noDB && !cfg.allowNoDB {
+		} else if !data.hadDB && !cfg.noDB && !cfg.allowNoDB {
 			log.Fatal(path + " does not exist. Please run 'filebrowser config init' first.")
 		}
-
-		data.hadDB = exists
-		db, err := storm.Open(path)
-		checkErr(err)
-		defer db.Close()
-		data.store, err = bolt.NewStorage(db)
-		checkErr(err)
 		fn(cmd, args, data)
 	}
 }

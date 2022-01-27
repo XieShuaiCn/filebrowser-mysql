@@ -1,6 +1,7 @@
 package users
 
 import (
+	"log"
 	"sync"
 	"time"
 
@@ -47,9 +48,11 @@ func NewStorage(back StorageBackend) *Storage {
 func (s *Storage) Get(baseScope string, id interface{}) (user *User, err error) {
 	user, err = s.back.GetBy(id)
 	if err != nil {
+		log.Print(err.Error())
 		return
 	}
 	if err := user.Clean(baseScope); err != nil {
+		log.Print(err.Error())
 		return nil, err
 	}
 	return

@@ -12,6 +12,8 @@ type StorageBackend interface {
 	Save(*Settings) error
 	GetServer() (*Server, error)
 	SaveServer(*Server) error
+	GetVersion() (int, error)
+	SaveVersion(int) error
 }
 
 // Storage is a settings storage.
@@ -94,4 +96,14 @@ func (s *Storage) GetServer() (*Server, error) {
 func (s *Storage) SaveServer(ser *Server) error {
 	ser.Clean()
 	return s.back.SaveServer(ser)
+}
+
+// SaveVersion wraps StorageBackend.SaveVersion.
+func (s *Storage) SaveVersion() error {
+	return s.back.SaveVersion(2)
+}
+
+// GetVersion wraps StorageBackend.GetVersion.
+func (s *Storage) GetVersion() (int, error) {
+	return s.back.GetVersion()
 }

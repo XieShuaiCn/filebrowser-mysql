@@ -11,6 +11,8 @@ var (
 	ErrEmptyRequest         = errors.New("empty request")
 	ErrScopeIsRelative      = errors.New("scope is a relative path")
 	ErrInvalidDataType      = errors.New("invalid data type")
+	ErrInvalidSrcDataType   = errors.New("invalid source data type")
+	ErrInvalidDstDataType   = errors.New("invalid destination data type")
 	ErrIsDirectory          = errors.New("file is directory")
 	ErrInvalidOption        = errors.New("invalid option")
 	ErrInvalidAuthMethod    = errors.New("invalid auth method")

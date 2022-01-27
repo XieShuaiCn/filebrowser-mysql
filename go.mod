@@ -7,6 +7,7 @@ require (
 	github.com/caddyserver/caddy v1.0.3
 	github.com/disintegration/imaging v1.6.2
 	github.com/dsoprea/go-exif/v3 v3.0.0-20201216222538-db167117f483
+	github.com/go-sql-driver/mysql v1.6.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gorilla/mux v1.7.3
 	github.com/gorilla/websocket v1.4.1
