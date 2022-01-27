@@ -64,8 +64,12 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 	return func(cmd *cobra.Command, args []string) {
 		var err error
 		data := pythonData{hadDB: true}
-		dbType := getParam(cmd.Flags(), "db.type")
-		path := getParam(cmd.Flags(), "db.url")
+		dbType, _ := getParamB(cmd.Flags(), "db.type")
+		path, ok2 := getParamB(cmd.Flags(), "db.url")
+		if dbType == "bolt" && !ok2 {
+			// set type which != bolt, then clear url
+			path = "bolt://filebrowser.db"
+		}
 		if path == "" {
 			dbHost := getParam(cmd.Flags(), "db.host")
 			dbPort := getParam(cmd.Flags(), "db.port")
@@ -73,8 +77,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 			dbPwd := getParam(cmd.Flags(), "db.password")
 			dbName := getParam(cmd.Flags(), "db.name")
 			path = dbType + "://" + dbUser + ":" + dbPwd + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName
-		}
-		if !strings.Contains(path, "://") {
+		} else if !strings.Contains(path, "://") {
 			path = dbType + "://" + path
 		}
 		data.store, err = storage.CreateStorage(path)

@@ -45,7 +45,7 @@ func init() {
 	persistent := rootCmd.PersistentFlags()
 
 	persistent.StringVarP(&cfgFile, "config", "c", "", "config file path")
-	persistent.StringP("db.url", "d", "./filebrowser.db", "database path")
+	persistent.StringP("db.url", "d", "", "database path")
 	persistent.String("db.type", "bolt", "database type, options: bolt, mysql.")
 	persistent.String("db.host", "localhost", "database host address")
 	persistent.String("db.port", "3306", "database port")

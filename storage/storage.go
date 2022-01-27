@@ -8,6 +8,7 @@ import (
 	"github.com/filebrowser/filebrowser/v2/storage/bolt"
 	"github.com/filebrowser/filebrowser/v2/storage/sqldb"
 	"github.com/filebrowser/filebrowser/v2/users"
+	"log"
 	"strings"
 )
 
@@ -21,6 +22,7 @@ type Storage struct {
 }
 
 func CreateStorage(path string) (*Storage, error) {
+	log.Println("Database: "+ path)
 	if strings.HasPrefix(path, "bolt://") {
 		return CreatePlotStorage(path[7:])
 	} else if strings.HasPrefix(path, "mysql://") {
