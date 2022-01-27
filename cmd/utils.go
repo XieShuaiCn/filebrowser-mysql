@@ -60,31 +60,19 @@ type pythonData struct {
 	store *storage.Storage
 }
 
-func dbExists(path string) (bool, error) {
-	stat, err := os.Stat(path)
-	if err == nil {
-		return stat.Size() != 0, nil
-	}
-
-	if os.IsNotExist(err) {
-		d := filepath.Dir(path)
-		_, err = os.Stat(d)
-		if os.IsNotExist(err) {
-			if err := os.MkdirAll(d, 0700); err != nil { //nolint:govet,gomnd
-				return false, err
-			}
-			return false, nil
-		}
-	}
-
-	return false, err
-}
-
 func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 	return func(cmd *cobra.Command, args []string) {
 		var err error
 		data := pythonData{hadDB: true}
-		path := getParam(cmd.Flags(), "database")
+		path := getParam(cmd.Flags(), "db.url")
+		if path == "" {
+			dbHost := getParam(cmd.Flags(), "db.host")
+			dbPort := getParam(cmd.Flags(), "db.port")
+			dbUser := getParam(cmd.Flags(), "db.user")
+			dbPwd := getParam(cmd.Flags(), "db.password")
+			dbName := getParam(cmd.Flags(), "db.name")
+			path = dbUser + ":" + dbPwd + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName
+		}
 		data.store, err = storage.CreateStorage(path)
 		checkErr(err)
 		err = storage.Initialized(data.store)

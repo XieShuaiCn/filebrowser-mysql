@@ -45,7 +45,12 @@ func init() {
 	persistent := rootCmd.PersistentFlags()
 
 	persistent.StringVarP(&cfgFile, "config", "c", "", "config file path")
-	persistent.StringP("database", "d", "./filebrowser.db", "database path")
+	persistent.StringP("db.url", "d", "", "database path")
+	persistent.String("db.host", "localhost", "database host address")
+	persistent.String("db.port", "3306", "database port")
+	persistent.String("db.user", "root", "database user name")
+	persistent.String("db.password", "", "database user password")
+	persistent.String("db.name", "filebrowser", "database name")
 	flags.Bool("noauth", false, "use the noauth auther when using quick setup")
 	flags.String("username", "admin", "username for the first user when using quick config")
 	flags.String("password", "", "hashed password for the first user when using quick config (default \"admin\")")
