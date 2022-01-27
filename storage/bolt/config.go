@@ -10,6 +10,10 @@ type settingsBackend struct {
 	db *storm.DB
 }
 
+func InitSettingBackend(db *storm.DB) *settingsBackend {
+	return &settingsBackend{db: db}
+}
+
 func (s settingsBackend) Get() (*settings.Settings, error) {
 	set := &settings.Settings{}
 	return set, get(s.db, "settings", set)

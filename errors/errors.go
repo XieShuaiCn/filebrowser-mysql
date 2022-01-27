@@ -21,3 +21,7 @@ var (
 	ErrSourceIsParent       = errors.New("source is parent")
 	ErrRootUserDeletion     = errors.New("user with id 1 can't be deleted")
 )
+
+func New(text string) error {
+	return errors.New(text)
+}

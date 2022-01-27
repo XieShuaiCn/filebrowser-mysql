@@ -12,6 +12,10 @@ type authBackend struct {
 	db *storm.DB
 }
 
+func InitAuthBackend(db *storm.DB) *authBackend {
+	return &authBackend{db: db}
+}
+
 func (s authBackend) Get(t settings.AuthMethod) (auth.Auther, error) {
 	var auther auth.Auther
 

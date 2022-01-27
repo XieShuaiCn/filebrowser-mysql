@@ -12,6 +12,10 @@ type shareBackend struct {
 	db *storm.DB
 }
 
+func InitShareBackend(db *storm.DB) *shareBackend {
+	return &shareBackend{db: db}
+}
+
 func (s shareBackend) All() ([]*share.Link, error) {
 	var v []*share.Link
 	err := s.db.All(&v)

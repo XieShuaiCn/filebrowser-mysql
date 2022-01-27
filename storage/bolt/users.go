@@ -13,6 +13,10 @@ type usersBackend struct {
 	db *storm.DB
 }
 
+func InitUserBackend(db *storm.DB) *usersBackend {
+	return &usersBackend{db: db}
+}
+
 func (st usersBackend) GetBy(i interface{}) (user *users.User, err error) {
 	user = &users.User{}
 

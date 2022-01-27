@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -13,6 +12,7 @@ import (
 	"github.com/spf13/pflag"
 	yaml "gopkg.in/yaml.v2"
 
+	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
 )
@@ -64,6 +64,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 	return func(cmd *cobra.Command, args []string) {
 		var err error
 		data := pythonData{hadDB: true}
+		dbType := getParam(cmd.Flags(), "db.type")
 		path := getParam(cmd.Flags(), "db.url")
 		if path == "" {
 			dbHost := getParam(cmd.Flags(), "db.host")
@@ -71,11 +72,14 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 			dbUser := getParam(cmd.Flags(), "db.user")
 			dbPwd := getParam(cmd.Flags(), "db.password")
 			dbName := getParam(cmd.Flags(), "db.name")
-			path = dbUser + ":" + dbPwd + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName
+			path = dbType + "://" + dbUser + ":" + dbPwd + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName
+		}
+		if !strings.Contains(path, "://") {
+			path = dbType + "://" + path
 		}
 		data.store, err = storage.CreateStorage(path)
 		checkErr(err)
-		err = storage.Initialized(data.store)
+		err = databaseInitialized(data.store)
 		data.hadDB = err == nil
 
 		if data.hadDB && cfg.noDB {
@@ -90,7 +94,7 @@ func python(fn pythonFunc, cfg pythonConfig) cobraFunc {
 func marshal(filename string, data interface{}) error {
 	fd, err := os.Create(filename)
 	checkErr(err)
-	defer fd.Close()
+	defer fd.Close() //nolint: Unhandled error
 
 	switch ext := filepath.Ext(filename); ext {
 	case ".json":
@@ -108,7 +112,7 @@ func marshal(filename string, data interface{}) error {
 func unmarshal(filename string, data interface{}) error {
 	fd, err := os.Open(filename)
 	checkErr(err)
-	defer fd.Close()
+	defer fd.Close() //nolint: Unhandled error
 
 	switch ext := filepath.Ext(filename); ext {
 	case ".json":
@@ -170,4 +174,15 @@ func convertCmdStrToCmdArray(cmd string) []string {
 		cmdArray = strings.Split(trimmedCmdStr, " ")
 	}
 	return cmdArray
+}
+
+func databaseInitialized(s *storage.Storage) error {
+	version, err := s.Settings.GetVersion()
+	if err != nil {
+		return errors.ErrNotExist
+	}
+	if version != 2 {
+		return errors.ErrNotExist
+	}
+	return nil
 }

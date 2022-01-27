@@ -45,7 +45,8 @@ func init() {
 	persistent := rootCmd.PersistentFlags()
 
 	persistent.StringVarP(&cfgFile, "config", "c", "", "config file path")
-	persistent.StringP("db.url", "d", "", "database path")
+	persistent.StringP("db.url", "d", "./filebrowser.db", "database path")
+	persistent.String("db.type", "bolt", "database type, options: bolt, mysql.")
 	persistent.String("db.host", "localhost", "database host address")
 	persistent.String("db.port", "3306", "database port")
 	persistent.String("db.user", "root", "database user name")
@@ -183,7 +184,7 @@ user created with the credentials from options "username" and "password".`,
 		handler, err := fbhttp.NewHandler(imgSvc, fileCache, d.store, server, assetsFs)
 		checkErr(err)
 
-		defer listener.Close()
+		defer listener.Close() //nolint: Unhandled error
 
 		log.Println("Listening on", listener.Addr().String())
 		if err := http.Serve(listener, handler); err != nil {
